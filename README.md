@@ -1,11 +1,10 @@
-# Create React App with Electron Forge Demo
+# Shotz 
+## Shotz lets you take screenshot of your desktop in intervals of 5 minutes
 
-**Installation:**
+**Local Build/Development:**
 
 ```sh
-npm i && npm run dev
+yarn
+
+yarn dev
 ```
-
-**Tutorial:**
-
-[Read the full tutorial on dev.to here](https://dev.to/mandiwise/electron-apps-made-easy-with-create-react-app-and-electron-forge-560e) 👩‍💻

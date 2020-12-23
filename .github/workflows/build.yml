@@ -19,14 +19,40 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 10
+      
+      - name: Install dependencies
+        run: yarn
 
-      - name: Build/release Electron app
-        uses: samuelmeuli/action-electron-builder@v1
+      - name: Build
+        run: yarn make
+
+      - name: Upload builds for macos
+        uses: softprops/action-gh-release@v1
+        if: startsWith(matrix.os, 'macos')
         with:
-          # GitHub token, automatically provided to the action
-          # (No need to define this secret in the repo settings)
-          github_token: ${{ secrets.github_token }}
+          tag_name: ${{ github.ref }}
+          files: out/**/*!(.zip)
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
-          # If the commit is tagged with a version (e.g. "v1.0.0"),
-          # release the app after building
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Upload builds to ubuntu
+        uses: softprops/action-gh-release@v1
+        if: startsWith(matrix.os, 'ubuntu')
+        with:
+          tag_name: ${{ github.ref }}
+          files: out/**/*!(.deb)
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Upload builds to windows
+        uses: softprops/action-gh-release@v1
+        if: matrix.os == 'windows-latest'
+        with:
+          tag_name: ${{ github.ref }}
+          files: out/**/*!(.exe)
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}

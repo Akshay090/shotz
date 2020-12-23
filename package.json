@@ -1,6 +1,7 @@
 {
-  "name": "shotz-screenshot",
-  "version": "0.1.0",
+  "name": "shotz",
+  "description": "shotz lets you take screenshot of your desktop in interval of 5 minutes",
+  "version": "1.0.0",
   "main": "public/electron.js",
   "homepage": "./",
   "private": true,
@@ -25,6 +26,13 @@
     "package": "react-scripts build && electron-forge package",
     "make": "react-scripts build && electron-forge make"
   },
+  "repository": "https://github.com/Akshay090/shotz",
+  "keywords": [
+    "Electron",
+    "screenshot"
+  ],
+  "author": "Akshay090",
+  "license": "MIT",
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -55,13 +63,13 @@
     "forge": {
       "packagerConfig": {
         "icon": "src/icons/mac/icon.icns",
-        "name": "React + Electron App"
+        "name": "shotz"
       },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "cra_electron_forge_demo"
+            "name": "shotz"
           }
         },
         {
