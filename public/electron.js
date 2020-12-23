@@ -1,7 +1,12 @@
 const path = require("path");
+const fs = require("fs");
+const os = require("os");
+const open = require("open");
 
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const isDev = require("electron-is-dev");
+
+// const fullscreenScreenshot = require("./screenshot");
 
 // Conditionally include the dev tools installer to load React Dev Tools
 let installExtension, REACT_DEVELOPER_TOOLS;
@@ -17,15 +22,24 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
+// the directory where screenshots are stored
+const shotzDir = path.join(os.homedir(), "Shotz");
+
+let win,
+  count = 0;
+
 function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 250,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+    },
+    resizable: false,
   });
+
+  win.removeMenu();
 
   // and load the index.html of the app.
   win.loadURL(
@@ -48,8 +62,8 @@ app.whenReady().then(() => {
 
   if (isDev) {
     installExtension(REACT_DEVELOPER_TOOLS)
-      .then(name => console.log(`Added Extension:  ${name}`))
-      .catch(error => console.log(`An error occurred: , ${error}`));
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((error) => console.log(`An error occurred: , ${error}`));
   }
 });
 
@@ -72,3 +86,33 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.handle("save-data", async (event, base64img, folder) => {
+  // ensuring the screenshot directory exists
+  if (!fs.existsSync(shotzDir)) fs.mkdirSync(shotzDir);
+
+  console.log(folder);
+  let shotDir = path.join(shotzDir, String(folder));
+
+  // creating the directory for this series of screenshots
+  if (!fs.existsSync(shotDir)) {
+    count = 0;
+    fs.mkdirSync(shotDir);
+  }
+
+  let shot = path.join(shotDir, `shot${count}.jpeg`);
+
+  const base64Data = base64img.replace(/^data:image\/jpeg;base64,/, "");
+  fs.writeFile(shot, base64Data, "base64", (err) => {
+    if (err) throw err;
+    console.log("Image Saved");
+    count++;
+  });
+});
+
+ipcMain.handle("open-base-dir", (event) => {
+  // ensuring the screenshot directory exists
+  if (!fs.existsSync(shotzDir)) fs.mkdirSync(shotzDir);
+
+  open(shotzDir);
+});
